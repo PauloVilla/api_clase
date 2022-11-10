@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-api-iris
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      role: rediris
+  template:
+    metadata:
+      labels:
+        role: rediris
+    spec:
+      containers:
+        - name: container-iris
+          image: paulo.azurecr.io/frontend-api:v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+      imagePullSecrets:
+        - name: messi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: load-balancer
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5000
+    targetPort: 8501
+  selector:
+    role: rediris
